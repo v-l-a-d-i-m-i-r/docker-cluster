@@ -1,4 +1,4 @@
-FROM nextcloud:17.0.2-fpm-alpine
+FROM i386/nextcloud:17.0.2-fpm-alpine
 
 # Enables first run initialization
 ENV NEXTCLOUD_UPDATE=1
