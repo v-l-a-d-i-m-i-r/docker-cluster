@@ -1,0 +1,18 @@
+version: '3'
+services:
+  rtorrent:
+    build:
+      context: ./services/rtorrent
+    ports:
+      - 49184:49184
+    volumes:
+      - .volumes/rtorrent:/data
+    tty: true
+
+  flood:
+    build:
+      context: ./services/flood
+    ports:
+      - 3000:80
+    # volumes:
+      # - .volumes/flood/db:/flood/server/db/

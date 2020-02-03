@@ -1,0 +1,4 @@
+* * * * * php -f /var/www/html/cron.php
+
+# @reboot   php /var/www/html/occ files:scan --all
+# * * * * * php /var/www/html/occ files:scan --all
