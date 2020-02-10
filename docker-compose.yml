@@ -1,4 +1,4 @@
-version: '3'
+version: '2.4'
 services:
   nextcloud-database:
     environment:
@@ -15,6 +15,7 @@ services:
       - ./.volumes/nextcloud/database:/var/lib/postgresql/data
       # - ./.volumes/nextcloud/database:/var/lib/mysql
     restart: unless-stopped
+    cpu_count: 1
 
   nextcloud-cache:
     build:

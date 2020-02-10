@@ -1,1 +1,1 @@
-FROM redis:5.0.7-32bit
+FROM i386/redis:5.0.7-alpine
