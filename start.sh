@@ -6,7 +6,7 @@ export DC_NEXTCLOUD_ADMIN_USER='admin';
 export DC_NEXTCLOUD_ADMIN_PASSWORD='admin';
 # export NEXTCLOUD_TRUSTED_DOMAINS='*';
 
-export DC_DATA_PATH=${DC_DATA_PATH};
+export DC_DATA_PATH=${DC_DATA_PATH:-'.data'};
 export DC_DATA_PATH_SUBFOLDER="/${DC_NEXTCLOUD_ADMIN_USER}/files";
 
 
