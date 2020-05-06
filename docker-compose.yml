@@ -70,3 +70,24 @@ services:
       - 139:139/tcp
       - 445:445/tcp
     restart: on-failure
+
+  mpd:
+    environment:
+      MPD_PORT: 6600
+    build:
+      context: ./services/mpd
+    devices:
+      - /dev/snd
+    ports:
+      - 6600:6600
+    restart: on-failure
+
+  ympd:
+    environment:
+      MPD_HOST: mpd
+      MPD_PORT: 6600
+    build:
+      context: ./services/ympd
+    ports:
+      - 81:80
+    restart: on-failure
