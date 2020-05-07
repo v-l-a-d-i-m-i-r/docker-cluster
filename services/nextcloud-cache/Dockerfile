@@ -1,1 +1,2 @@
-FROM i386/redis:5.0.8-alpine
+ARG REDIS_VERSION
+FROM i386/redis:${REDIS_VERSION}-alpine

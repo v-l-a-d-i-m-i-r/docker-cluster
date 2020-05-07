@@ -1,4 +1,5 @@
-FROM alpine:3.11.5
+ARG ALPINE_VERSION
+FROM alpine:${ALPINE_VERSION}
 
 # https://hub.docker.com/r/vimagick/mpd
 

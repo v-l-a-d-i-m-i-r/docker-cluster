@@ -1,4 +1,5 @@
-FROM i386/nextcloud:18.0.3-fpm-alpine
+ARG NEXTCLOUD_VERSION
+FROM i386/nextcloud:${NEXTCLOUD_VERSION}-fpm-alpine
 
 # Enables first run initialization
 ENV NEXTCLOUD_UPDATE=1
