@@ -77,13 +77,13 @@ services:
 
   smb:
     environment:
-      DATA_PATH: /media/storage${DC_DATA_PATH_SUBFOLDER}
+      DATA_PATH: /media${DC_DATA_PATH_SUBFOLDER}
     build:
       context: ./services/smb
       args:
         ALPINE_VERSION: ${ALPINE_VERSION}
     volumes:
-      - ${DC_DATA_PATH}:/media/storage
+      - ${DC_DATA_PATH}:/media
     ports:
       - 135:135/tcp
       - 137:137/udp
@@ -95,7 +95,7 @@ services:
   mpd:
     environment:
       MPD_PORT: ${MPD_PORT}
-      DATA_PATH: /media/storage${DC_DATA_PATH_SUBFOLDER}/music
+      DATA_PATH: /media${DC_DATA_PATH_SUBFOLDER}/Music
     build:
       context: ./services/mpd
       args:
@@ -103,7 +103,7 @@ services:
     volumes:
       - ./.volumes/nextcloud/mpd/cache:/mpd/cache
       - ./.volumes/nextcloud/mpd/playlists:/mpd/playlists
-      - ${DC_DATA_PATH}:/media/storage
+      - ${DC_DATA_PATH}:/media
     devices:
       - /dev/snd
     ports:
