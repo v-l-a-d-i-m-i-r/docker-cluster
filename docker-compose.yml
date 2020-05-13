@@ -95,10 +95,15 @@ services:
   mpd:
     environment:
       MPD_PORT: ${MPD_PORT}
+      DATA_PATH: /media/storage${DC_DATA_PATH_SUBFOLDER}/music
     build:
       context: ./services/mpd
       args:
         ALPINE_VERSION: ${ALPINE_VERSION}
+    volumes:
+      - ./.volumes/nextcloud/mpd/cache:/mpd/cache
+      - ./.volumes/nextcloud/mpd/playlists:/mpd/playlists
+      - ${DC_DATA_PATH}:/media/storage
     devices:
       - /dev/snd
     ports:
