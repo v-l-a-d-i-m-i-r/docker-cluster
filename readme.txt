@@ -41,3 +41,8 @@ docker run --rm -ti \
   -v $(pwd)/vol:/config \
   -v $(pwd)/vol:/data \
   linuxserver/nextcloud
+
+Install manually:
+
+OCC Web
+ocDownloader

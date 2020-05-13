@@ -1,0 +1,13 @@
+#EXTM3U
+#EXTINF:-1,Organlive.com 320kbps North America
+http://play.organlive.com:7000/320
+#EXTINF:-1,Organlive.com 320kbps Europe
+http://play2.organlive.com:7000/320
+#EXTINF:-1,Organlive.com 192kbps North America
+http://play.organlive.com:7000/192
+#EXTINF:-1,Organlive.com 192kbps Europe
+http://play2.organlive.com:7000/192
+#EXTINF:-1,Organlive.com 128kbps North America
+http://play.organlive.com:7000/128
+#EXTINF:-1,Organlive.com 128kbps Europe
+http://play2.organlive.com:7000/128

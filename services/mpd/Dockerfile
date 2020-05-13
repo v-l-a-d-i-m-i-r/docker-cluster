@@ -3,11 +3,14 @@ FROM alpine:${ALPINE_VERSION}
 
 # https://hub.docker.com/r/vimagick/mpd
 
-RUN apk add --no-cache mpd gettext
+ENV NODE_PATH="/usr/lib/node_modules/"
+
+RUN apk add --no-cache mpd alsa-utils gettext nodejs npm
+RUN npm install -g --unsafe-perm shelljs@0.8.4
 
 COPY ./config/mpd.conf /etc/mpd.conf
-COPY ./entrypoint.sh ./entrypoint.sh
+COPY ./entrypoint.js ./entrypoint.js
 
-RUN chmod +x ./entrypoint.sh
+RUN chmod +x ./entrypoint.js
 
-ENTRYPOINT [ "./entrypoint.sh" ]
+ENTRYPOINT [ "./entrypoint.js" ]

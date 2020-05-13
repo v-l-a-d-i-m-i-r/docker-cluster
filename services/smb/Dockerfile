@@ -11,6 +11,7 @@ RUN apk add --no-cache supervisor \
 COPY ./config/supervisord.conf /etc/supervisor/supervisord.conf
 COPY ./config/smb.conf /etc/samba/smb.conf
 COPY ./entrypoint.sh ./entrypoint.sh
+COPY ./scripts /etc/scripts
 
 RUN chmod +x ./entrypoint.sh
 
