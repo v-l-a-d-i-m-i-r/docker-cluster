@@ -46,3 +46,8 @@ Install manually:
 
 OCC Web
 ocDownloader
+
+Dozzle
+portainer
+Alsamixer-webui
+Groovebasin

@@ -77,7 +77,7 @@ execSync('mkdir -p /mpd/playlists');
 execSync('test -f /mpd/cache/state || touch /mpd/cache/state');
 execSync('sed -i "s/^state: .*/state: pause/" /mpd/cache/state');
 execSync('test -f /mpd/cache/tag_cache || touch /mpd/cache/tag_cache');
-execSync('test -f /mpd/cache/sticker.sql || /mpd/cache/sticker.sql');
+execSync('test -f /mpd/cache/sticker.sql || touch /mpd/cache/sticker.sql');
 
 const asoundOutput = execSync('aplay -l | grep ^card').toString();
 const devicesMap = createDevicesMap(asoundOutput);
