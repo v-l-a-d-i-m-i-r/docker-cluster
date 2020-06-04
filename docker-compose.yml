@@ -22,7 +22,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-    restart: on-failure
+    restart: unless-stopped
     cpu_count: 1
 
   nextcloud-cache:
@@ -32,7 +32,7 @@ services:
         REDIS_VERSION: ${REDIS_VERSION}
     volumes:
       - ./.volumes/nextcloud/cache:/data
-    restart: on-failure
+    restart: unless-stopped
 
   nextcloud-server:
     environment:
@@ -62,7 +62,7 @@ services:
     volumes:
       - ./.volumes/nextcloud/html:/var/www/html
       - ${DC_DATA_PATH}:/var/www/html/data
-    restart: on-failure
+    restart: unless-stopped
 
   nextcloud-static:
     build:
@@ -73,7 +73,7 @@ services:
       - ./.volumes/nextcloud/html:/var/www/html:ro
     ports:
       - 80:80
-    restart: on-failure
+    restart: unless-stopped
 
   smb:
     environment:
@@ -84,18 +84,21 @@ services:
         ALPINE_VERSION: ${ALPINE_VERSION}
     volumes:
       - ${DC_DATA_PATH}:/media
+      - ./.volumes/nextcloud/smb:/var/lib/samba
     ports:
       - 135:135/tcp
       - 137:137/udp
       - 138:138/udp
       - 139:139/tcp
       - 445:445/tcp
-    restart: on-failure
+    restart: unless-stopped
 
   mpd:
     environment:
-      MPD_PORT: ${MPD_PORT}
+      MPD_PORT: ${DC_MPD_PORT}
       DATA_PATH: /media${DC_DATA_PATH_SUBFOLDER}/Music
+      LOG_LEVEL: ${DC_MPD_LOG_LEVEL}
+      ALSA_DEVICE: ${DC_MPD_ALSA_DEVICE}
     build:
       context: ./services/mpd
       args:
@@ -107,20 +110,20 @@ services:
     devices:
       - /dev/snd
     ports:
-      - ${MPD_PORT}:${MPD_PORT}
-    restart: on-failure
+      - ${DC_MPD_PORT}:${DC_MPD_PORT}
+    restart: unless-stopped
 
   ympd:
     environment:
       MPD_HOST: mpd
-      MPD_PORT: ${MPD_PORT}
+      MPD_PORT: ${DC_MPD_PORT}
     build:
       context: ./services/ympd
       args:
         ALPINE_VERSION: ${ALPINE_VERSION}
     ports:
       - 81:80
-    restart: on-failure
+    restart: unless-stopped
 
 
 
