@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 const { readFileSync, writeFileSync } = require('fs');
-const { execSync } = require('child_process');
+const { execSync, spawn, exec } = require('child_process');
 
 const { ALSA_DEVICE } = process.env;
 
@@ -89,4 +89,10 @@ const configFile = render(configFileTemplate, { ...process.env, ALSA_DEVICE_LABE
 writeFileSync(configFilePath, configFile);
 
 // console.log(readFileSync(configFilePath).toString('utf-8'));
-execSync(`mpd --no-daemon --stdout ${configFilePath}`);
+const proc = spawn('mpd', ['--no-daemon', '--stdout', '--verbose', configFilePath]);
+const { stdout, stderr } = proc;
+
+stdout.pipe(process.stdout);
+stderr.pipe(process.stderr);
+
+proc.on('exit', (code) => process.exit(code));
