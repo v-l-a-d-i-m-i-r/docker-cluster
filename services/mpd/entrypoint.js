@@ -80,6 +80,8 @@ execSync('test -f /mpd/cache/tag_cache || touch /mpd/cache/tag_cache');
 execSync('test -f /mpd/cache/sticker.sql || touch /mpd/cache/sticker.sql');
 
 const asoundOutput = execSync('aplay -l | grep ^card').toString();
+
+console.log(asoundOutput);
 const devicesMap = createDevicesMap(asoundOutput);
 const deviceLabel = getDeviceLabel(ALSA_DEVICE, devicesMap);
 

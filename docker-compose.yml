@@ -108,7 +108,7 @@ services:
       - ./.volumes/nextcloud/mpd/playlists:/mpd/playlists
       - ${DC_DATA_PATH}:/media
     devices:
-      - /dev/snd
+      - /dev/snd:/dev/snd
     ports:
       - ${DC_MPD_PORT}:${DC_MPD_PORT}
     restart: unless-stopped
