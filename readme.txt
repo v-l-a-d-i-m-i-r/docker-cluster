@@ -51,3 +51,15 @@ Dozzle
 portainer
 Alsamixer-webui
 Groovebasin
+
+
+filebrowsers
+https://github.com/filebrowser/filebrowser
+https://github.com/prasathmani/tinyfilemanager (127.0.0.1 not localhost)
+https://github.com/coderaiser/cloudcmd
+https://github.com/Studio-42/elFinder
+https://filerun.com/
+https://github.com/topics/file-explorer
+
+Sharing
+https://github.com/ehough/docker-nfs-server

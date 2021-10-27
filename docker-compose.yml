@@ -75,6 +75,17 @@ services:
       - 80:80
     restart: unless-stopped
 
+  filebrowser:
+    build:
+      context: ./services/filebrowser
+    volumes:
+      - ${DC_DATA_PATH}/${DC_DATA_PATH_SUBFOLDER}:/srv
+      - ./.volumes/filebrowser/db:/db
+    command: --noauth
+    ports:
+      - 82:80
+    restart: unless-stopped
+
   smb:
     environment:
       DATA_PATH: /media${DC_DATA_PATH_SUBFOLDER}
@@ -97,6 +108,7 @@ services:
     environment:
       MPD_PORT: ${DC_MPD_PORT}
       DATA_PATH: /media${DC_DATA_PATH_SUBFOLDER}/Music
+      # DATA_PATH: smb://smb/guest/Music
       LOG_LEVEL: ${DC_MPD_LOG_LEVEL}
       ALSA_DEVICE: ${DC_MPD_ALSA_DEVICE}
     build:
