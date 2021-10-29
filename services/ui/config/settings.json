@@ -1,0 +1,14 @@
+{
+  "tabs": [
+    {
+      "title": "File Browser",
+      "url": "http://filebrowser.localhost",
+      "hash": "filebrowser"
+    },
+    {
+      "title": "Ympd",
+      "url": "http://ympd.localhost",
+      "hash": "ympd"
+    }
+  ]
+}

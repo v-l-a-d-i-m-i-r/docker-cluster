@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" href="/icon.png" />
+  <title>NAS</title>
+</head>
+<body>
+  <header>
+    <nav>
+    </nav>
+  </header>
+
+  <section class="main">
+    <iframe src="" frameborder="0" id="iframe"></iframe>
+  </section>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      height: 100%;
+    }
+
+    body {
+      display: flex;
+      height: 100%;
+      margin: 0;
+      flex-direction: column;
+    }
+
+    nav {
+      padding: 20px;
+      white-space: nowrap;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      -ms-overflow-style: -ms-autohiding-scrollbar;
+    }
+
+    nav a {
+      padding: 10px 20px;
+      border: solid 1px #aaa;
+    }
+
+    iframe {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    .main {
+      flex-grow: 1;
+    }
+  </style>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      const nav = document.querySelector('nav');
+      const iframe = document.querySelector('iframe');
+
+      const { tabs } = await fetch('/settings.json').then(res => res.json());
+
+      const onHashChange = () => {
+        console.log(location.hash);
+        const hash = location.hash.replace('#', '');
+        const tab = tabs.find(t => t.hash === hash) || tabs[0];
+
+        iframe.setAttribute('src', tab.url);
+      };
+
+      const onScroll = (event) => {
+        event.preventDefault();
+        nav.scrollLeft += event.deltaY;
+      };
+
+      window.addEventListener("hashchange", onHashChange, false);
+      nav.addEventListener("wheel", onScroll);
+
+      for (tab of tabs) {
+        const listItem = document.createElement('a');
+
+        listItem.addEventListener('click', onclick);
+        listItem.appendChild(document.createTextNode(tab.title));
+        listItem.setAttribute('href', `#${tab.hash}`);
+
+        nav.appendChild(listItem);
+      }
+
+      onHashChange();
+    });
+  </script>
+</body>
+</html>

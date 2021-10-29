@@ -63,3 +63,7 @@ https://github.com/topics/file-explorer
 
 Sharing
 https://github.com/ehough/docker-nfs-server
+
+
+Cookies
+https://bugs.chromium.org/p/chromium/issues/detail?id=1062162

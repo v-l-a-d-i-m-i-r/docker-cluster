@@ -1,5 +1,12 @@
 version: '2.4'
 services:
+  ui:
+    build:
+      context: ./services/ui
+    ports:
+      - 80:80
+    restart: unless-stopped
+
   nextcloud-database:
     environment:
       # MYSQL_DATABASE: ${DC_DATABASE_NAME}
@@ -71,8 +78,8 @@ services:
         NGINX_VERSION: ${NGINX_VERSION}
     volumes:
       - ./.volumes/nextcloud/html:/var/www/html:ro
-    ports:
-      - 80:80
+    # ports:
+    #   - 80:80
     restart: unless-stopped
 
   filebrowser:
@@ -82,8 +89,8 @@ services:
       - ${DC_DATA_PATH}/${DC_DATA_PATH_SUBFOLDER}:/srv
       - ./.volumes/filebrowser/db:/db
     command: --noauth
-    ports:
-      - 82:80
+    # ports:
+    #   - 82:80
     restart: unless-stopped
 
   smb:
@@ -133,8 +140,8 @@ services:
       context: ./services/ympd
       args:
         ALPINE_VERSION: ${ALPINE_VERSION}
-    ports:
-      - 81:80
+    # ports:
+    #   - 81:80
     restart: unless-stopped
 
 
