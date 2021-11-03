@@ -1,0 +1,13 @@
+diff --git a/frontend/src/utils/auth.js b/frontend/src/utils/auth.js
+index 31cb57c4..6fffd5dc 100644
+--- a/frontend/src/utils/auth.js
++++ b/frontend/src/utils/auth.js
+@@ -12,7 +12,7 @@ export function parseToken(token) {
+ 
+   const data = JSON.parse(Base64.decode(parts[1]));
+ 
+-  document.cookie = `auth=${token}; path=/`;
++  document.cookie = `auth=${token}; path=/; SameSite=None; Secure`;
+ 
+   localStorage.setItem("jwt", token);
+   store.commit("setJWT", token);
