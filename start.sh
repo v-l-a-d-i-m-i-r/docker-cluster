@@ -21,6 +21,8 @@ export NGINX_VERSION='1.17.9';
 
 
 # Run time environment variables
+export PUID=$(id -u);
+export PGID=$(id -g);
 export DC_DATABASE_NAME='nextcloud';
 export DC_DATABASE_USER='nextcloud';
 export DC_DATABASE_PASSWORD='nextcloud';

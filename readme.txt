@@ -42,6 +42,14 @@ docker run --rm -ti \
   -v $(pwd)/vol:/data \
   linuxserver/nextcloud
 
+VNC
+https://github.com/pingod/alpine-xfce4-novnc
+docker run --rm \
+  -p 5900:5900 -p 9000:6080 \
+  --name alpine-xfce-vnc \
+  --hostname alpine \
+  edgelevel/alpine-xfce-vnc
+
 Install manually:
 
 OCC Web
@@ -67,3 +75,6 @@ https://github.com/ehough/docker-nfs-server
 
 Cookies
 https://bugs.chromium.org/p/chromium/issues/detail?id=1062162
+
+Nginx
+https://www.nginx.com/blog/tuning-nginx/
