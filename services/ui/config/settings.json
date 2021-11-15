@@ -9,6 +9,11 @@
       "title": "Ympd",
       "url": "http://ympd.localhost",
       "hash": "ympd"
+    },
+    {
+      "title": "Qbittorent",
+      "url": "http://qbittorent.localhost",
+      "hash": "qbittorent"
     }
   ]
 }
