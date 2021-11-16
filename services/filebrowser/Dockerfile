@@ -1,7 +1,3 @@
-# FROM filebrowser/filebrowser:v2.17.2
-
-# COPY config/.filebrowser.json .filebrowser.json
-
 FROM alpine:3.14.2 as builder
 
 RUN apk add --no-cache git nodejs npm go
@@ -16,7 +12,26 @@ RUN set -x && cd ./frontend && npm ci && npm run build && cd ../ && \
 
 FROM alpine:3.14.2
 
-COPY --from=builder /filebrowser/filebrowser /filebrowser
-COPY config/.filebrowser.json .filebrowser.json
+ARG USER=filebrowser
+ARG GROUP=filebrowser
 
-ENTRYPOINT [ "./filebrowser" ]
+RUN apk add --no-cache sudo shadow curl
+
+RUN addgroup "${GROUP}" \
+  && adduser -G "${GROUP}" -h /home/"${USER}" -D "${USER}" \
+  && chmod 755 /home/"${USER}"
+
+WORKDIR /home/"${USER}"
+
+COPY --from=builder /filebrowser/filebrowser ./filebrowser
+COPY ./entrypoint.sh ./entrypoint.sh
+COPY ./healthcheck.sh ./healthcheck.sh
+
+RUN chmod -R 755 .
+RUN chown -R "${USER}":"${GROUP}" .
+
+EXPOSE 80
+
+HEALTHCHECK CMD [ "sh", "./healthcheck.sh" ]
+
+ENTRYPOINT [ "sh", "./entrypoint.sh" ]

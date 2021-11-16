@@ -1,166 +1,89 @@
 version: '2.4'
 services:
   ui:
+    image: docker-clister-ui:1.0.0
     build:
       context: ./services/ui
     ports:
       - 80:80
     restart: unless-stopped
 
-  nextcloud-database:
-    environment:
-      # MYSQL_DATABASE: ${DC_DATABASE_NAME}
-      # MYSQL_USER: ${DC_DATABASE_USER}
-      # MYSQL_PASSWORD: ${DC_DATABASE_PASSWORD}
-      # MYSQL_ROOT_PASSWORD: ${DC_DATABASE_PASSWORD}
-
-      POSTGRES_DB: ${DC_DATABASE_NAME}
-      POSTGRES_USER: ${DC_DATABASE_USER}
-      POSTGRES_PASSWORD: ${DC_DATABASE_PASSWORD}
-    build:
-      context: ./services/nextcloud-database
-      args:
-        POSTGRES_VERSION: ${POSTGRES_VERSION}
-    volumes:
-      # - ./.volumes/nextcloud/database:/var/lib/mysql
-      - ./.volumes/nextcloud/database:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER}"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    restart: unless-stopped
-    cpu_count: 1
-
-  nextcloud-cache:
-    build:
-      context: ./services/nextcloud-cache
-      args:
-        REDIS_VERSION: ${REDIS_VERSION}
-    volumes:
-      - ./.volumes/nextcloud/cache:/data
-    restart: unless-stopped
-
-  nextcloud-server:
-    environment:
-      # MYSQL_HOST: nextcloud-database
-      # MYSQL_DATABASE: ${DC_DATABASE_NAME}
-      # MYSQL_USER: ${DC_DATABASE_USER}
-      # MYSQL_PASSWORD: ${DC_DATABASE_PASSWORD}
-      # MYSQL_ROOT_PASSWORD: ${DC_DATABASE_PASSWORD}
-
-      REDIS_HOST: nextcloud-cache
-
-      POSTGRES_HOST: nextcloud-database
-      POSTGRES_DB: ${DC_DATABASE_NAME}
-      POSTGRES_USER: ${DC_DATABASE_USER}
-      POSTGRES_PASSWORD: ${DC_DATABASE_PASSWORD}
-
-      NEXTCLOUD_ADMIN_USER: ${DC_NEXTCLOUD_ADMIN_USER}
-      NEXTCLOUD_ADMIN_PASSWORD: ${DC_NEXTCLOUD_ADMIN_PASSWORD}
-      NEXTCLOUD_TRUSTED_DOMAINS: ${DC_NEXTCLOUD_TRUSTED_DOMAINS}
-    build:
-      context: ./services/nextcloud-server
-      args:
-        NEXTCLOUD_VERSION: ${NEXTCLOUD_VERSION}
-    depends_on:
-      nextcloud-database:
-        condition: service_healthy
-    volumes:
-      - ./.volumes/nextcloud/html:/var/www/html
-      - ${DC_DATA_PATH}:/var/www/html/data
-    restart: unless-stopped
-
-  nextcloud-static:
-    build:
-      context: ./services/nextcloud-static
-      args:
-        NGINX_VERSION: ${NGINX_VERSION}
-    volumes:
-      - ./.volumes/nextcloud/html:/var/www/html:ro
-    # ports:
-    #   - 80:80
-    restart: unless-stopped
-
   filebrowser:
+    image: docker-clister-filebrowser:1.0.0
     build:
       context: ./services/filebrowser
-    volumes:
-      - ${DC_DATA_PATH}/${DC_DATA_PATH_SUBFOLDER}:/srv
-      - ./.volumes/filebrowser/db:/db
-    command: --noauth
-    # ports:
-    #   - 82:80
-    restart: unless-stopped
-
-  smb:
-    environment:
-      DATA_PATH: /media${DC_DATA_PATH_SUBFOLDER}
-    build:
-      context: ./services/smb
-      args:
-        ALPINE_VERSION: ${ALPINE_VERSION}
-    volumes:
-      - ${DC_DATA_PATH}:/media
-      - ./.volumes/nextcloud/smb:/var/lib/samba
-    ports:
-      - 135:135/tcp
-      - 137:137/udp
-      - 138:138/udp
-      - 139:139/tcp
-      - 445:445/tcp
-    restart: unless-stopped
-
-  mpd:
-    environment:
-      MPD_PORT: ${DC_MPD_PORT}
-      DATA_PATH: /media${DC_DATA_PATH_SUBFOLDER}/Music
-      # DATA_PATH: smb://smb/guest/Music
-      LOG_LEVEL: ${DC_MPD_LOG_LEVEL}
-      ALSA_DEVICE: ${DC_MPD_ALSA_DEVICE}
-    build:
-      context: ./services/mpd
-      args:
-        ALPINE_VERSION: ${ALPINE_VERSION}
-    volumes:
-      - ./.volumes/nextcloud/mpd/cache:/mpd/cache
-      - ./.volumes/nextcloud/mpd/playlists:/mpd/playlists
-      - ${DC_DATA_PATH}:/media
-    devices:
-      - /dev/snd:/dev/snd
-    ports:
-      - ${DC_MPD_PORT}:${DC_MPD_PORT}
-    restart: unless-stopped
-
-  ympd:
-    environment:
-      MPD_HOST: mpd
-      MPD_PORT: ${DC_MPD_PORT}
-    build:
-      context: ./services/ympd
-      args:
-        ALPINE_VERSION: ${ALPINE_VERSION}
-    # ports:
-    #   - 81:80
-    restart: unless-stopped
-
-  qbittorrent:
     environment:
       PUID: ${PUID}
       PGID: ${PGID}
-      TZ: Europe/Kiev
-      WEBUI_PORT: 80
-    build:
-      context: ./services/qbittorrent
-    ports:
-      - 6881:6881
-      - 6881:6881/udp
-      - 8080:8080
+    volumes:
+      - ${DC_VOLUMES_PATH}/filebrowser/db:/home/filebrowser/db
+      - ${DC_DATA_PATH}:/home/filebrowser/data
+    restart: unless-stopped
 
-# https://stackoverflow.com/questions/35069027/docker-wait-for-postgresql-to-be-running
-# RETRIES=5
+  # smb:
+  #   environment:
+  #     # PUID: ${PUID}
+  #     # PGID: ${PGID}
+  #     DATA_PATH: /media
+  #   build:
+  #     context: ./services/smb
+  #     args:
+  #       ALPINE_VERSION: ${ALPINE_VERSION}
+  #   volumes:
+  #     # - ./.volumes/smb:/var/lib/samba
+  #     - ./.data:/media
+  #   ports:
+  #     - 135:135/tcp
+  #     - 137:137/udp
+  #     - 138:138/udp
+  #     - 139:139/tcp
+  #     - 445:445/tcp
+  #   # user: ${PUID}:${PGID}
+  #   restart: unless-stopped
 
-# until psql -h $PG_HOST -U $PG_USER -d $PG_DATABASE -c "select 1" > /dev/null 2>&1 || [ $RETRIES -eq 0 ]; do
-#   echo "Waiting for postgres server, $((RETRIES--)) remaining attempts..."
-#   sleep 1
-# done
+  # x-mpd:
+  #   environment:
+  #     MPD_PORT: ${DC_MPD_PORT}
+  #     DATA_PATH: /media
+  #     # DATA_PATH: smb://smb/guest/Music
+  #     LOG_LEVEL: ${DC_MPD_LOG_LEVEL}
+  #     ALSA_DEVICE: ${DC_MPD_ALSA_DEVICE}
+  #   build:
+  #     context: ./services/mpd
+  #     args:
+  #       ALPINE_VERSION: ${ALPINE_VERSION}
+  #   volumes:
+  #     - ./.volumes/mpd/cache:/mpd/cache
+  #     - ./.volumes/mpd/playlists:/mpd/playlists
+  #     - ./.data/Music:/media
+  #   devices:
+  #     - /dev/snd:/dev/snd
+  #   user: ${PUID}:${PGID}
+  #   ports:
+  #     - ${DC_MPD_PORT}:${DC_MPD_PORT}
+  #   restart: unless-stopped
+
+  # x-ympd:
+  #   environment:
+  #     MPD_HOST: mpd
+  #     MPD_PORT: ${DC_MPD_PORT}
+  #   build:
+  #     context: ./services/ympd
+  #     args:
+  #       ALPINE_VERSION: ${ALPINE_VERSION}
+  #   user: ${PUID}:${PGID}
+  #   restart: unless-stopped
+
+  # x-qbittorrent:
+  #   environment:
+  #     PUID: ${PUID}
+  #     PGID: ${PGID}
+  #     TZ: Europe/Kiev
+  #     WEBUI_PORT: 80
+  #   build:
+  #     context: ./services/qbittorrent
+  #   ports:
+  #     - 6881:6881
+  #     - 6881:6881/udp
+  #     - 8080:8080
+  #   restart: unless-stopped

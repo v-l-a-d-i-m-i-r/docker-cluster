@@ -78,3 +78,21 @@ https://bugs.chromium.org/p/chromium/issues/detail?id=1062162
 
 Nginx
 https://www.nginx.com/blog/tuning-nginx/
+
+# https://stackoverflow.com/questions/35069027/docker-wait-for-postgresql-to-be-running
+# RETRIES=5
+
+# until psql -h $PG_HOST -U $PG_USER -d $PG_DATABASE -c "select 1" > /dev/null 2>&1 || [ $RETRIES -eq 0 ]; do
+#   echo "Waiting for postgres server, $((RETRIES--)) remaining attempts..."
+#   sleep 1
+# done
+
+
+RUN addgroup $GROUP \
+  && adduser -G $GROUP -h /home/$USER -D $USER \
+  && chmod 777 /home/$USER
+  # && echo "$USER ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/$USER \
+  # && chmod 0440 /etc/sudoers.d/$USER
+
+
+DC_MPD_PORT=6600 docker-compose config 2>/dev/null | yq -r '.services | values[].image' | grep -v 'null'

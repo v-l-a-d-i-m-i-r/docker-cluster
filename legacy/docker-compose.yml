@@ -16,3 +16,78 @@ services:
       - 3000:80
     # volumes:
       # - .volumes/flood/db:/flood/server/db/
+
+  nextcloud-database:
+    environment:
+      # MYSQL_DATABASE: ${DC_DATABASE_NAME}
+      # MYSQL_USER: ${DC_DATABASE_USER}
+      # MYSQL_PASSWORD: ${DC_DATABASE_PASSWORD}
+      # MYSQL_ROOT_PASSWORD: ${DC_DATABASE_PASSWORD}
+
+      POSTGRES_DB: ${DC_DATABASE_NAME}
+      POSTGRES_USER: ${DC_DATABASE_USER}
+      POSTGRES_PASSWORD: ${DC_DATABASE_PASSWORD}
+    build:
+      context: ./services/nextcloud-database
+      args:
+        POSTGRES_VERSION: ${POSTGRES_VERSION}
+    volumes:
+      # - ./.volumes/nextcloud/database:/var/lib/mysql
+      - ./.volumes/nextcloud/database:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    cpu_count: 1
+
+  nextcloud-cache:
+    build:
+      context: ./services/nextcloud-cache
+      args:
+        REDIS_VERSION: ${REDIS_VERSION}
+    volumes:
+      - ./.volumes/nextcloud/cache:/data
+    restart: unless-stopped
+
+  nextcloud-server:
+    environment:
+      # MYSQL_HOST: nextcloud-database
+      # MYSQL_DATABASE: ${DC_DATABASE_NAME}
+      # MYSQL_USER: ${DC_DATABASE_USER}
+      # MYSQL_PASSWORD: ${DC_DATABASE_PASSWORD}
+      # MYSQL_ROOT_PASSWORD: ${DC_DATABASE_PASSWORD}
+
+      REDIS_HOST: nextcloud-cache
+
+      POSTGRES_HOST: nextcloud-database
+      POSTGRES_DB: ${DC_DATABASE_NAME}
+      POSTGRES_USER: ${DC_DATABASE_USER}
+      POSTGRES_PASSWORD: ${DC_DATABASE_PASSWORD}
+
+      NEXTCLOUD_ADMIN_USER: ${DC_NEXTCLOUD_ADMIN_USER}
+      NEXTCLOUD_ADMIN_PASSWORD: ${DC_NEXTCLOUD_ADMIN_PASSWORD}
+      NEXTCLOUD_TRUSTED_DOMAINS: ${DC_NEXTCLOUD_TRUSTED_DOMAINS}
+    build:
+      context: ./services/nextcloud-server
+      args:
+        NEXTCLOUD_VERSION: ${NEXTCLOUD_VERSION}
+    depends_on:
+      nextcloud-database:
+        condition: service_healthy
+    volumes:
+      - ./.volumes/nextcloud/html:/var/www/html
+      - ${DC_DATA_PATH}:/var/www/html/data
+    restart: unless-stopped
+
+  nextcloud-static:
+    build:
+      context: ./services/nextcloud-static
+      args:
+        NGINX_VERSION: ${NGINX_VERSION}
+    volumes:
+      - ./.volumes/nextcloud/html:/var/www/html:ro
+    # ports:
+    #   - 80:80
+    restart: unless-stopped
