@@ -3,17 +3,20 @@
     {
       "title": "File Browser",
       "url": "http://filebrowser.localhost",
-      "hash": "filebrowser"
+      "hash": "filebrowser",
+      "subdomain": "filebrowser"
     },
     {
       "title": "Ympd",
       "url": "http://ympd.localhost",
-      "hash": "ympd"
+      "hash": "ympd",
+      "subdomain": "ympd"
     },
     {
       "title": "Qbittorrent",
       "url": "http://qbittorrent.localhost",
-      "hash": "qbittorrent"
+      "hash": "qbittorrent",
+      "subdomain": "qbittorrent"
     }
   ]
 }

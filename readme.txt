@@ -96,3 +96,13 @@ RUN addgroup $GROUP \
 
 
 DC_MPD_PORT=6600 docker-compose config 2>/dev/null | yq -r '.services | values[].image' | grep -v 'null'
+
+
+# build
+DC_DATA_PATH='.data' DC_CONFIG_PATH='.volumes' docker-compose build --parallel;
+
+# push
+DC_DATA_PATH='.data' DC_CONFIG_PATH='.volumes' docker-compose config 2>/dev/null | yq -r '.services | values[].image' | grep -v 'null' | xargs -I '{}' -P 1 sh -ce 'docker save {} | gzip | pv | ssh vladimir@lenovo-s10 docker load';
+
+# run
+DOCKER_HOST="ssh://vladimir@lenovo-s10" DC_DATA_PATH='/data/nas-data' DC_CONFIG_PATH='/data/nas-config' PUID='1000' PGID='984' DC_MPD_PORT='6600' DC_MPD_LOG_LEVEL='verbose' DC_MPD_ALSA_DEVICE='hw:0,0' docker-compose up -d;

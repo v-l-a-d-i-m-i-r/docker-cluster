@@ -61,15 +61,16 @@
     document.addEventListener('DOMContentLoaded', async () => {
       const nav = document.querySelector('nav');
       const iframe = document.querySelector('iframe');
+      const { protocol, host, port } = location;
 
       const { tabs } = await fetch('/settings.json').then(res => res.json());
 
       const onHashChange = () => {
         console.log(location.hash);
         const hash = location.hash.replace('#', '');
-        const tab = tabs.find(t => t.hash === hash) || tabs[0];
+        const { subdomain } = tabs.find(t => t.hash === hash) || tabs[0];
 
-        iframe.setAttribute('src', tab.url);
+        iframe.setAttribute('src', `${protocol}//${subdomain}.${host}${port ? `:${port}` : ''}`);
       };
 
       const onScroll = (event) => {
@@ -83,7 +84,7 @@
       for (tab of tabs) {
         const listItem = document.createElement('a');
 
-        listItem.addEventListener('click', onclick);
+        // listItem.addEventListener('click', onclick);
         listItem.appendChild(document.createTextNode(tab.title));
         listItem.setAttribute('href', `#${tab.hash}`);
 

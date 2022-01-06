@@ -1,5 +1,5 @@
 ARG ALPINE_VERSION
-FROM alpine:${ALPINE_VERSION}
+FROM alpine:3.14.2
 
 RUN apk add --no-cache supervisor \
   # samba-common-tools \

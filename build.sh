@@ -7,4 +7,4 @@ export NEXTCLOUD_VERSION='18.0.4';
 export NGINX_VERSION='1.17.9';
 
 
-docker-compose build;
+docker-compose build --parallel;

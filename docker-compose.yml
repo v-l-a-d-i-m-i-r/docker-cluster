@@ -1,7 +1,29 @@
 version: '2.4'
 services:
   ui:
-    image: docker-clister-ui:1.0.0
+    environment:
+      SETTINGS_JSON: |-
+        {
+          "tabs": [
+            {
+              "title": "File Browser",
+              "hash": "filebrowser",
+              "subdomain": "filebrowser"
+            },
+            {
+              "title": "Ympd",
+              "hash": "ympd",
+              "subdomain": "ympd"
+            },
+            {
+              "title": "Qbittorrent",
+              "hash": "qbittorrent",
+              "subdomain": "qbittorrent"
+            }
+          ]
+        }
+
+    image: nas-ui:1.0.0
     build:
       context: ./services/ui
     ports:
@@ -9,81 +31,75 @@ services:
     restart: unless-stopped
 
   filebrowser:
-    image: docker-clister-filebrowser:1.0.0
+    image: nas-filebrowser:1.0.0
     build:
       context: ./services/filebrowser
     environment:
       PUID: ${PUID}
       PGID: ${PGID}
     volumes:
-      - ${DC_VOLUMES_PATH}/filebrowser/db:/home/filebrowser/db
+      - ${DC_CONFIG_PATH}/filebrowser/db:/home/filebrowser/db
       - ${DC_DATA_PATH}:/home/filebrowser/data
     restart: unless-stopped
 
-  # smb:
-  #   environment:
-  #     # PUID: ${PUID}
-  #     # PGID: ${PGID}
-  #     DATA_PATH: /media
-  #   build:
-  #     context: ./services/smb
-  #     args:
-  #       ALPINE_VERSION: ${ALPINE_VERSION}
-  #   volumes:
-  #     # - ./.volumes/smb:/var/lib/samba
-  #     - ./.data:/media
-  #   ports:
-  #     - 135:135/tcp
-  #     - 137:137/udp
-  #     - 138:138/udp
-  #     - 139:139/tcp
-  #     - 445:445/tcp
-  #   # user: ${PUID}:${PGID}
-  #   restart: unless-stopped
+  smb:
+    image: nas-smb:1.0.0
+    build:
+      context: ./services/smb
+    volumes:
+      # - ${DC_CONFIG_PATH}/smb:/var/lib/samba
+      - ${DC_DATA_PATH}:/data:ro
+    ports:
+      - 135:135/tcp
+      - 137:137/udp
+      - 138:138/udp
+      - 139:139/tcp
+      - 445:445/tcp
+    restart: unless-stopped
 
-  # x-mpd:
-  #   environment:
-  #     MPD_PORT: ${DC_MPD_PORT}
-  #     DATA_PATH: /media
-  #     # DATA_PATH: smb://smb/guest/Music
-  #     LOG_LEVEL: ${DC_MPD_LOG_LEVEL}
-  #     ALSA_DEVICE: ${DC_MPD_ALSA_DEVICE}
-  #   build:
-  #     context: ./services/mpd
-  #     args:
-  #       ALPINE_VERSION: ${ALPINE_VERSION}
-  #   volumes:
-  #     - ./.volumes/mpd/cache:/mpd/cache
-  #     - ./.volumes/mpd/playlists:/mpd/playlists
-  #     - ./.data/Music:/media
-  #   devices:
-  #     - /dev/snd:/dev/snd
-  #   user: ${PUID}:${PGID}
-  #   ports:
-  #     - ${DC_MPD_PORT}:${DC_MPD_PORT}
-  #   restart: unless-stopped
+  mpd:
+    environment:
+      PUID: ${PUID}
+      PGID: ${PGID}
+      DATA_PATH: /mpd/music
+      # DATA_PATH: smb://smb/guest/Music
+      LOG_LEVEL: ${DC_MPD_LOG_LEVEL}
+      ALSA_DEVICE: ${DC_MPD_ALSA_DEVICE}
+    image: nas-mpd:1.0.0
+    build:
+      context: ./services/mpd
+    volumes:
+      - ${DC_CONFIG_PATH}/mpd/cache:/mpd/cache
+      - ${DC_DATA_PATH}/playlists:/mpd/playlists
+      - ${DC_DATA_PATH}/music:/mpd/music
+    devices:
+      - /dev/snd:/dev/snd
+    ports:
+      - ${DC_MPD_PORT}:6600
+    restart: unless-stopped
 
-  # x-ympd:
-  #   environment:
-  #     MPD_HOST: mpd
-  #     MPD_PORT: ${DC_MPD_PORT}
-  #   build:
-  #     context: ./services/ympd
-  #     args:
-  #       ALPINE_VERSION: ${ALPINE_VERSION}
-  #   user: ${PUID}:${PGID}
-  #   restart: unless-stopped
+  ympd:
+    image: nas-ympd:1.0.0
+    environment:
+      MPD_HOST: mpd
+      MPD_PORT: ${DC_MPD_PORT}
+    build:
+      context: ./services/ympd
+    restart: unless-stopped
 
-  # x-qbittorrent:
-  #   environment:
-  #     PUID: ${PUID}
-  #     PGID: ${PGID}
-  #     TZ: Europe/Kiev
-  #     WEBUI_PORT: 80
-  #   build:
-  #     context: ./services/qbittorrent
-  #   ports:
-  #     - 6881:6881
-  #     - 6881:6881/udp
-  #     - 8080:8080
-  #   restart: unless-stopped
+  qbittorrent:
+    image: nas-qbittorrent:1.0.0
+    environment:
+      PUID: ${PUID}
+      PGID: ${PGID}
+      TZ: Europe/Kiev
+      WEBUI_PORT: 80
+    build:
+      context: ./services/qbittorrent
+    volumes:
+      - ${DC_CONFIG_PATH}/qbittorrent/config:/config
+      - ${DC_DATA_PATH}/downloads:/downloads
+    ports:
+      - 6881:6881
+      - 6881:6881/udp
+    restart: unless-stopped

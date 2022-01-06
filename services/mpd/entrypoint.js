@@ -3,7 +3,7 @@
 const { readFileSync, writeFileSync } = require('fs');
 const { execSync, spawn, exec } = require('child_process');
 
-const { ALSA_DEVICE } = process.env;
+const { ALSA_DEVICE, PUID = 1000, PGID = 1000 } = process.env;
 
 const configFilePath='/etc/mpd.conf';
 
@@ -70,15 +70,6 @@ const getDeviceLabel = (deviceKey, devicesMap) => {
   return `${card.name} (${device.name})`;
 }
 
-
-execSync('mkdir -p /mpd/cache');
-execSync('mkdir -p /mpd/playlists');
-
-execSync('test -f /mpd/cache/state || touch /mpd/cache/state');
-execSync('sed -i "s/^state: .*/state: pause/" /mpd/cache/state');
-execSync('test -f /mpd/cache/tag_cache || touch /mpd/cache/tag_cache');
-execSync('test -f /mpd/cache/sticker.sql || touch /mpd/cache/sticker.sql');
-
 const asoundOutput = execSync('aplay -l | grep ^card').toString();
 
 console.log(asoundOutput);
@@ -90,8 +81,20 @@ const configFile = render(configFileTemplate, { ...process.env, ALSA_DEVICE_LABE
 
 writeFileSync(configFilePath, configFile);
 
+execSync(`usermod -u ${PUID} mpd`);
+execSync(`groupmod -g ${PGID} mpd`);
+
+execSync('mkdir -p /mpd/cache /mpd/music /mpd/playlists');
+
+execSync('test -f /mpd/cache/state || touch /mpd/cache/state');
+execSync('sed -i "s/^state: .*/state: pause/" /mpd/cache/state');
+execSync('test -f /mpd/cache/tag_cache || touch /mpd/cache/tag_cache');
+execSync('test -f /mpd/cache/sticker.sql || touch /mpd/cache/sticker.sql');
+
+execSync('chown -R mpd:mpd /mpd/cache /mpd/music /mpd/playlists');
+
 // console.log(readFileSync(configFilePath).toString('utf-8'));
-const proc = spawn('mpd', ['--no-daemon', '--stdout', '--verbose', configFilePath]);
+const proc = spawn('mpd', [ '--no-daemon', '--stdout', '--verbose', configFilePath]);
 const { stdout, stderr } = proc;
 
 stdout.pipe(process.stdout);

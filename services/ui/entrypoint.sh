@@ -2,4 +2,6 @@
 
 set -e;
 
-nginx -g daemon off;
+echo "${SETTINGS_JSON}" > /usr/share/nginx/html/settings.json;
+
+nginx-debug -g 'daemon off;';
