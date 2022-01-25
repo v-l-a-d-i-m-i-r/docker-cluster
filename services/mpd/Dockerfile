@@ -8,13 +8,11 @@ ARG GROUP=mpd
 
 ENV NODE_PATH="/usr/lib/node_modules/"
 
-RUN apk add --no-cache sudo shadow mpd alsa-utils gettext nodejs npm \
-    && npm install -g --unsafe-perm shelljs@0.8.4 \
+RUN apk add --no-cache sudo shadow mpd alsa-utils \
     && addgroup "${GROUP}" \
     && adduser "${USER}" "${GROUP}" \
     && adduser "${USER}" audio
 
-COPY ./config/mpd.conf /etc/mpd.conf
-COPY ./entrypoint.js ./entrypoint.js
+COPY ./entrypoint.sh ./entrypoint.sh
 
-ENTRYPOINT [ "node", "./entrypoint.js" ]
+ENTRYPOINT [ "sh", "./entrypoint.sh" ]

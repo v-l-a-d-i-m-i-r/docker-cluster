@@ -61,10 +61,42 @@ services:
     environment:
       PUID: ${PUID}
       PGID: ${PGID}
-      DATA_PATH: /mpd/music
       # DATA_PATH: smb://smb/guest/Music
-      LOG_LEVEL: ${DC_MPD_LOG_LEVEL}
-      ALSA_DEVICE: ${DC_MPD_ALSA_DEVICE}
+      MPD_CONF: |-
+        bind_to_address "0.0.0.0"
+        port "6600"
+        log_level "${DC_MPD_LOG_LEVEL}"
+
+        music_directory "/mpd/music"
+        playlist_directory "/mpd/playlists"
+        db_file "/mpd/cache/tag_cache"
+        state_file "/mpd/cache/state"
+        sticker_file "/mpd/cache/sticker.sql"
+
+        filesystem_charset "UTF-8"
+
+        auto_update	"yes"
+
+        input {
+          plugin "curl"
+        }
+
+        input {
+          plugin "alsa"
+        }
+
+        audio_output {
+          type "alsa"
+          name "FX-AUDIO-DAC-X6"
+          device "hw:FXAUDIODACX6"
+          mixer_type "hardware"
+          mixer_device "hw:FXAUDIODACX6"
+          mixer_control "PCM"
+          replay_gain_handler "mixer"
+          auto_resample "no"
+          auto_format "no"
+          auto_channels "no"
+        }
     image: nas-mpd:1.0.0
     build:
       context: ./services/mpd
