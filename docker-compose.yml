@@ -8,17 +8,20 @@ services:
             {
               "title": "File Browser",
               "hash": "filebrowser",
-              "subdomain": "filebrowser"
+              "subdomain": "filebrowser",
+              "port": 81
             },
             {
               "title": "Ympd",
               "hash": "ympd",
-              "subdomain": "ympd"
+              "subdomain": "ympd",
+              "port": 82
             },
             {
               "title": "Qbittorrent",
               "hash": "qbittorrent",
-              "subdomain": "qbittorrent"
+              "subdomain": "qbittorrent",
+              "port": 83
             }
           ]
         }
@@ -28,6 +31,9 @@ services:
       context: ./services/ui
     ports:
       - 80:80
+      - 81:81
+      - 82:82
+      - 83:83
     restart: unless-stopped
 
   filebrowser:
@@ -135,3 +141,32 @@ services:
       - 6881:6881
       - 6881:6881/udp
     restart: unless-stopped
+
+  # flood:
+  #   image: nas-flood:1.0.0
+  #   environment:
+  #     HOME: /config
+  #   build:
+  #     context: ./services/flood
+  #   user: ${PUID}:${PGID}
+  #   command: --port 80 --allowedpath /data
+
+  #   volumes:
+  #     - ${DC_CONFIG_PATH}/flood:/config
+  #     - ${DC_DATA_PATH}/downloads:/data
+  #   restart: unless-stopped
+
+  # rtorrent:
+  #   image: nas-rtorrent:1.0.0
+  #   environment:
+  #     HOME: /config
+  #   build:
+  #     context: ./services/rtorrent
+  #   user: ${PUID}:${PGID}
+  #   command: -o network.port_range.set=6881-6881,system.daemon.set=true
+  #   volumes:
+  #     - ${DC_CONFIG_PATH}/flood:/config
+  #     - ${DC_DATA_PATH}/downloads:/data
+  #   ports:
+  #     - 6881:6881
+  #   restart: unless-stopped

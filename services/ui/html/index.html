@@ -61,16 +61,16 @@
     document.addEventListener('DOMContentLoaded', async () => {
       const nav = document.querySelector('nav');
       const iframe = document.querySelector('iframe');
-      const { protocol, host, port } = location;
+      const { protocol, host } = location;
 
       const { tabs } = await fetch('/settings.json').then(res => res.json());
 
       const onHashChange = () => {
-        console.log(location.hash);
         const hash = location.hash.replace('#', '');
-        const { subdomain } = tabs.find(t => t.hash === hash) || tabs[0];
+        const { port } = tabs.find(t => t.hash === hash) || tabs[0];
 
-        iframe.setAttribute('src', `${protocol}//${subdomain}.${host}${port ? `:${port}` : ''}`);
+        // iframe.setAttribute('src', `${protocol}//${subdomain}.${host}${port ? `:${port}` : ''}`);
+        iframe.setAttribute('src', `${protocol}//${host}:${port}`);
       };
 
       const onScroll = (event) => {

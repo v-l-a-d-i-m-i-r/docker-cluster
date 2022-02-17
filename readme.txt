@@ -88,6 +88,13 @@ https://www.nginx.com/blog/tuning-nginx/
 # done
 
 
+https://hswolff.com/blog/how-to-usecontext-with-usereducer/
+https://mwichary.medium.com/dark-theme-in-a-day-3518dde2955a
+https://medium.com/simply/comparison-hocs-vs-render-props-vs-hooks-55f9ffcd5dc6
+https://iamakulov.com/talks/redux-in-real-life/
+https://fonts.google.com/specimen/Dongle#about
+
+
 RUN addgroup $GROUP \
   && adduser -G $GROUP -h /home/$USER -D $USER \
   && chmod 777 /home/$USER
